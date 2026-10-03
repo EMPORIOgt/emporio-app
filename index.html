@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Emporio Equipo</title>
+<meta name="theme-color" content="#0f0f11">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Emporio">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="root"><div class="auth"><div class="logo">E</div><p class="muted" style="text-align:center">Cargando…</p></div></div>
+<div id="toast" class="hidden"></div>
+<div id="modal-host"></div>
+<script src="vendor/supabase.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script src="chat.js"></script>
+<script src="horario.js"></script>
+<script src="mas.js"></script>
+<script src="admin.js"></script>
+<script>
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+</script>
+</body>
+</html>

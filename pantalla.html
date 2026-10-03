@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Emporio · Pantalla de marcaje</title>
+<link rel="icon" href="icons/icon-192.png">
+<style>
+  :root{--bg:#0f0f11;--card:#1a1a1e;--line:#2d2d34;--text:#f4f1ea;--muted:#9a968c;--gold:#d9b25f}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px/1.4 -apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
+  h1{margin:0;font-size:clamp(22px,3.2vw,40px);letter-spacing:.04em}
+  .sub{color:var(--muted);font-size:clamp(14px,1.6vw,20px)}
+  .qr{background:#fff;padding:18px;border-radius:24px;width:min(78vmin,620px);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}
+  .qr svg{width:100%;height:100%}
+  .bar{width:min(78vmin,620px);height:10px;border-radius:99px;background:#26262c;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--gold);width:100%;transition:width .25s linear}
+  .clock{font-size:clamp(34px,6vw,72px);font-weight:800;color:var(--gold);letter-spacing:.02em}
+  .msg{color:#ef6a5b;min-height:1.4em}
+  form{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(420px,100%);text-align:left}
+  label{display:block;color:var(--muted);font-size:13px;margin:10px 0 4px}
+  input{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#222227;color:var(--text);font-size:16px}
+  button{width:100%;margin-top:16px;padding:13px;border:0;border-radius:12px;background:var(--gold);color:#17130a;font-weight:700;font-size:16px;cursor:pointer}
+  .hidden{display:none!important}
+  .tiny{position:fixed;bottom:10px;right:14px;color:#55535a;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap" id="login">
+  <h1>Pantalla de marcaje</h1>
+  <div class="sub">Inicia sesión con la cuenta de <b>Pantalla</b> de Emporio</div>
+  <form id="f">
+    <label>Correo</label><input id="em" type="email" autocomplete="username" required>
+    <label>Contraseña</label><input id="pw" type="password" autocomplete="current-password" required>
+    <div class="msg" id="lm"></div>
+    <button>Entrar</button>
+  </form>
+</div>
+
+<div class="wrap hidden" id="screen">
+  <h1 id="gym">Emporio Fitness</h1>
+  <div class="sub">Escanea este código con la app para marcar tu entrada</div>
+  <div class="qr" id="qr"></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="clock" id="clock">--:--</div>
+  <div class="sub" id="date"></div>
+  <div class="msg" id="err"></div>
+</div>
+<div class="tiny hidden" id="out"><a href="#" id="logout" style="color:inherit">Cerrar sesión</a></div>
+
+<script src="vendor/supabase.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="config.js"></script>
+<script>
+const C = window.EMPORIO;
+const sb = supabase.createClient(C.SUPABASE_URL, C.SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+const $ = id => document.getElementById(id);
+let offset = 0, tok = null, busy = false, timer = null, retryAt = 0;
+
+async function boot() {
+  const { data } = await sb.auth.getSession();
+  if (data.session) start(); else show('login');
+}
+function show(w) {
+  $('login').classList.toggle('hidden', w !== 'login');
+  $('screen').classList.toggle('hidden', w !== 'screen');
+  $('out').classList.toggle('hidden', w !== 'screen');
+}
+$('f').addEventListener('submit', async e => {
+  e.preventDefault(); $('lm').textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email: $('em').value.trim(), password: $('pw').value });
+  if (error) { $('lm').textContent = 'Correo o contraseña incorrectos'; return; }
+  start();
+});
+$('logout').addEventListener('click', async e => { e.preventDefault(); clearInterval(timer); await sb.auth.signOut(); show('login'); });
+
+async function start() {
+  show('screen');
+  try { if ('wakeLock' in navigator) { await navigator.wakeLock.request('screen'); } } catch (_) {}
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible') { try { await navigator.wakeLock.request('screen'); } catch (_) {} }
+  });
+  clearInterval(timer);
+  timer = setInterval(tick, 250);
+  tick();
+}
+
+async function fetchToken() {
+  if (busy || Date.now() < retryAt) return; busy = true;
+  try {
+    const { data, error } = await sb.rpc('get_qr_token');
+    if (error) throw error;
+    tok = data;
+    offset = data.server_now * 1000 - Date.now();
+    $('gym').textContent = data.gym_name || 'Emporio Fitness';
+    const q = qrcode(0, 'M'); q.addData('EMPORIO|' + data.token); q.make();
+    $('qr').innerHTML = q.createSvgTag(1, 2);
+    $('err').textContent = '';
+  } catch (e) {
+    retryAt = Date.now() + 4000;
+    const m = String(e.message || e);
+    $('err').textContent = /No autorizado/i.test(m)
+      ? 'Esta cuenta no tiene rol de Pantalla. Pide a Gerencia que la configure.'
+      : 'Sin conexión con el servidor. Reintentando…';
+  } finally { busy = false; }
+}
+
+function tick() {
+  const now = Date.now() + offset;
+  const d = new Date();
+  $('clock').textContent = d.toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: C.TZ });
+  $('date').textContent = d.toLocaleDateString('es-GT', { weekday: 'long', day: 'numeric', month: 'long', timeZone: C.TZ });
+  if (!tok) { fetchToken(); return; }
+  const left = tok.expires_at * 1000 - now;
+  $('bar').style.width = Math.max(0, Math.min(100, left / (tok.window * 1000) * 100)) + '%';
+  if (left <= 1200) fetchToken();
+  if (left < -5000) { tok = null; }
+}
+boot();
+</script>
+</body>
+</html>
