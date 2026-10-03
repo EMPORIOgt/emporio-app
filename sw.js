@@ -1,8 +1,8 @@
 // Service worker: guarda la "cáscara" de la app para abrirla rápido. Los datos siempre vienen de internet (Supabase).
-const CACHE = 'emporio-v1';
+const CACHE = 'emporio-v2';
 const SHELL = ['./', './index.html', './pantalla.html', './styles.css', './config.js', './app.js', './chat.js', './horario.js', './mas.js', './admin.js',
   './vendor/supabase.js', './vendor/jsQR.js', './vendor/qrcode.js', './manifest.webmanifest',
-  './icons/icon-192.png', './icons/icon-512.png'];
+  './icons/icon-192.png', './icons/icon-512.png', './icons/logo-full.png', './icons/logo-mark.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL).catch(() => {})).then(() => self.skipWaiting()));

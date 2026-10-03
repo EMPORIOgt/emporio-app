@@ -1,7 +1,7 @@
 :root{
-  --bg:#0f0f11; --card:#1a1a1e; --card2:#222227; --line:#2d2d34;
-  --text:#f4f1ea; --muted:#9a968c; --gold:#d9b25f; --gold-d:#a8863a;
-  --ok:#4cc38a; --warn:#f0b429; --bad:#ef6a5b; --info:#6aa8ff;
+  --bg:#0a0a0b; --card:#161618; --card2:#202023; --line:#2d2d34;
+  --text:#f4f1ea; --muted:#9a968c; --gold:#ff2d2d; --gold-d:#b50f14;
+  --ok:#4cc38a; --warn:#f0b429; --bad:#ff8a5c; --info:#6aa8ff;
   --r:16px; --nav:64px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -38,7 +38,7 @@ nav.bottom a.on{color:var(--gold)}
 .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--card2);border:1px solid var(--line);white-space:nowrap}
 .pill.ok{color:var(--ok);border-color:#2c5b46} .pill.bad{color:var(--bad);border-color:#6a2f29}
 .pill.warn{color:var(--warn);border-color:#6a5420} .pill.info{color:var(--info);border-color:#2b4670} .pill.gold{border-color:var(--gold-d)}
-.btn{background:var(--gold);color:#17130a;border:0;border-radius:12px;padding:12px 16px;font-weight:700;width:100%;cursor:pointer}
+.btn{background:var(--gold);color:#fff;border:0;border-radius:12px;padding:12px 16px;font-weight:700;width:100%;cursor:pointer}
 .btn:active{background:var(--gold-d)} .btn:disabled{opacity:.5}
 .btn.sec2{background:var(--card2);color:var(--text);border:1px solid var(--line)}
 .btn.bad{background:#3a1f1c;color:#ffb4aa;border:1px solid #6a2f29}
@@ -53,7 +53,7 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 .chk input{margin:0}
 .tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 14px;padding-bottom:2px}
 .tabs button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:8px 14px;cursor:pointer}
-.tabs button.on{background:var(--gold);color:#17130a;border-color:var(--gold);font-weight:700}
+.tabs button.on{background:var(--gold);color:#fff;border-color:var(--gold);font-weight:700}
 .avatar{width:40px;height:40px;border-radius:50%;background:var(--card2);border:1px solid var(--line);object-fit:cover;flex:0 0 auto;
   display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--gold);overflow:hidden}
 .avatar.lg{width:96px;height:96px;font-size:34px} .avatar.sm{width:32px;height:32px;font-size:13px}
@@ -77,8 +77,7 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 
 /* auth */
 .auth{max-width:420px;margin:0 auto;padding:calc(40px + env(safe-area-inset-top)) 20px 30px}
-.logo{width:72px;height:72px;border-radius:20px;background:linear-gradient(145deg,#2a2418,#0f0f11);border:1px solid var(--gold-d);
-  display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:800;color:var(--gold);margin:0 auto 14px}
+.logo{display:block;width:min(260px,70%);height:auto;margin:0 auto 18px}
 
 /* scanner */
 .scan{position:relative;border-radius:var(--r);overflow:hidden;background:#000;aspect-ratio:3/4;margin-bottom:12px}
@@ -96,7 +95,7 @@ input[type=checkbox]{width:auto;accent-color:var(--gold)}
 .msg .t{font-size:10px;color:var(--muted);text-align:right;margin-top:2px}
 .composer{display:flex;gap:8px;align-items:flex-end;padding-top:8px;border-top:1px solid var(--line)}
 .composer textarea{min-height:44px;max-height:120px;flex:1;border-radius:22px}
-.composer button{width:46px;height:46px;border-radius:50%;border:0;background:var(--gold);color:#17130a;font-weight:800;font-size:18px}
+.composer button{width:46px;height:46px;border-radius:50%;border:0;background:var(--gold);color:#fff;font-weight:800;font-size:18px}
 
 /* schedule */
 .days{display:flex;gap:6px;margin-bottom:12px}

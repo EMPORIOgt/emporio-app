@@ -102,7 +102,7 @@ function authView(msg = '') {
   S.me = null;
   $('#root').innerHTML = `
   <div class="auth">
-    <div class="logo">E</div>
+    <img class="logo" src="icons/logo-full.png" alt="Emporio">
     <h1 style="text-align:center;font-size:24px">Emporio Equipo</h1>
     <p class="muted" style="text-align:center;margin:4px 0 18px">Tu espacio de trabajo en Emporio Fitness</p>
     <div class="tabs" style="justify-content:center">
@@ -153,7 +153,7 @@ function authView(msg = '') {
 }
 
 function blockedView(title, text) {
-  $('#root').innerHTML = `<div class="auth"><div class="logo">E</div><h1 style="text-align:center">${esc(title)}</h1>
+  $('#root').innerHTML = `<div class="auth"><img class="logo" src="icons/logo-full.png" alt="Emporio"><h1 style="text-align:center">${esc(title)}</h1>
   <p class="muted" style="text-align:center">${text}</p><button class="btn sec2" id="b-out" style="margin-top:20px">Cerrar sesión</button></div>`;
   $('#b-out').onclick = () => sb.auth.signOut();
 }
